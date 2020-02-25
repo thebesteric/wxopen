@@ -8,9 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.wesoft.common.utils.HttpUtils;
 import org.wesoft.common.utils.RegexUtils;
 import org.wesoft.common.utils.StringUtils;
-import org.wesoft.wechat.wxopen.api.Customer;
-import org.wesoft.wechat.wxopen.api.Menu;
-import org.wesoft.wechat.wxopen.api.Guide;
+import org.wesoft.wechat.wxopen.api.*;
 import org.wesoft.wechat.wxopen.base.BaseResponseMessage;
 import org.wesoft.wechat.wxopen.cache.LocalCache;
 import org.wesoft.wechat.wxopen.client.crypt.AesException;
@@ -44,6 +42,12 @@ public class WechatHelper extends WechatHelperSupport {
     /** 导购模块 API */
     public Guide guide;
 
+    /** 用户模块 API */
+    public UserInfo userInfo;
+
+    /** 标签模块 API */
+    public Tag tag;
+
     public WechatHelper(String appID, String appSecret, String token, String encodeAESKey) {
         WechatHelperSupport.appID = appID;
         WechatHelperSupport.appSecret = appSecret;
@@ -65,6 +69,8 @@ public class WechatHelper extends WechatHelperSupport {
         this.menu = new Menu();
         this.customer = new Customer();
         this.guide = new Guide();
+        this.userInfo = new UserInfo();
+        this.tag = new Tag();
     }
 
     /**
@@ -72,7 +78,6 @@ public class WechatHelper extends WechatHelperSupport {
      *
      * @param jsapi_ticket jsapi_ticket
      * @param url          授权地址
-     *
      * @return Map<String, String>
      */
     public Map<String, Object> webSignature(String jsapi_ticket, String url) {
@@ -125,7 +130,6 @@ public class WechatHelper extends WechatHelperSupport {
      * 响应消息对象转换成 XML 格式
      *
      * @param responseMessage 响应消息对象
-     *
      * @return xml
      */
     public String responseMessageToXml(BaseResponseMessage responseMessage) {
@@ -137,7 +141,6 @@ public class WechatHelper extends WechatHelperSupport {
      * 图文消息对象转换成 XML 格式
      *
      * @param newsMessage 图文消息对象
-     *
      * @return xml
      */
     public static String newsMessageToXml(ResNewsMessage newsMessage) {

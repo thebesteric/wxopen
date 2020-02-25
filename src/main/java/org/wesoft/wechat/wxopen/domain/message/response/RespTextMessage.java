@@ -11,7 +11,7 @@ import org.wesoft.wechat.wxopen.base.BaseResponseMessage;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @Data
-public class ResTextMessage extends BaseResponseMessage {
+public class RespTextMessage extends BaseResponseMessage {
 
     /** 消息内容 */
     private String Content;

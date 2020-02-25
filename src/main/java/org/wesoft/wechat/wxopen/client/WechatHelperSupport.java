@@ -49,8 +49,9 @@ public class WechatHelperSupport extends WechatConstant {
     public String getAccessToken() throws NullParameterException {
         String accessToken = (String) LocalCache.getInstance().get(WechatConstant.ACCESS_TOKEN);
         if (StringUtils.isEmpty(accessToken)) {
-            if (StringUtils.isNotEmpty(appID) && StringUtils.isNotEmpty(appSecret))
+            if (StringUtils.isEmpty(appID) || StringUtils.isEmpty(appSecret)) {
                 throw new NullParameterException("AppID and AppSecret must be not null");
+            }
             String url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=%s&secret=%s";
             url = String.format(url, appID, appSecret);
             JSONObject ret = HttpUtils.doGet(url);
@@ -95,7 +96,6 @@ public class WechatHelperSupport extends WechatConstant {
      * @param signature 签名
      * @param timestamp 时间戳
      * @param nonce     随机串
-     *
      * @return boolean
      */
     public boolean checkSignatures(String signature, String timestamp, String nonce) {
@@ -116,7 +116,6 @@ public class WechatHelperSupport extends WechatConstant {
      * 从流中解析对象
      *
      * @param request 请求
-     *
      * @return Map<String, String>
      */
     public Map<String, String> parseXml(HttpServletRequest request) throws Exception {
@@ -165,7 +164,6 @@ public class WechatHelperSupport extends WechatConstant {
      * 响应消息对象转换成 XML 格式
      *
      * @param responseMessage 响应消息对象
-     *
      * @return xml
      */
     public String responseMessageToXml(BaseResponseMessage responseMessage) {

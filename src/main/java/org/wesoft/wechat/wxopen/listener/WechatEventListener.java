@@ -85,8 +85,8 @@ public abstract class WechatEventListener extends WechatEvent {
                     }
                     // 正常关注
                     else {
-                        ReqEventSubscribeMessage reqEventSubscribeMessage = (ReqEventSubscribeMessage) new ReqEventSubscribeScanMessage()
-                                .setEventKey(eventKey).setTicket(requestMap.get("Ticket")).setBaseEventRequestMessage(baseEventRequestMessage);
+                        ReqEventSubscribeMessage reqEventSubscribeMessage = (ReqEventSubscribeMessage) new ReqEventSubscribeMessage()
+                                .setBaseEventRequestMessage(baseEventRequestMessage);
                         respContent = processEventSubscribe(wechatHelper, reqEventSubscribeMessage);
                     }
                 }
@@ -119,7 +119,8 @@ public abstract class WechatEventListener extends WechatEvent {
                     String scanType = requestMap.get("ScanType");
                     String scanResult = requestMap.get("ScanResult");
                     ReqEventMenuScanCodeMessage reqEventMenuScanCodePushMessage = (ReqEventMenuScanCodeMessage) new ReqEventMenuScanCodeMessage()
-                            .setEventKey(eventKey).setScanCodeInfo(new ReqEventMenuScanCodeMessage.ScanCodeInfo(scanType, scanResult)).setBaseEventRequestMessage(baseEventRequestMessage);
+                            .setEventKey(eventKey).setScanCodeInfo(new ReqEventMenuScanCodeMessage.ScanCodeInfo(scanType, scanResult))
+                            .setBaseEventRequestMessage(baseEventRequestMessage);
                     respContent = processEventMenuScanCodePush(wechatHelper, reqEventMenuScanCodePushMessage);
                 }
                 // 自定义菜单 - 扫码推事件且弹出"消息接收中"提示框的事件推送
@@ -127,7 +128,8 @@ public abstract class WechatEventListener extends WechatEvent {
                     String scanType = requestMap.get("ScanType");
                     String scanResult = requestMap.get("ScanResult");
                     ReqEventMenuScanCodeMessage reqEventMenuScanCodeWaitMessage = (ReqEventMenuScanCodeMessage) new ReqEventMenuScanCodeMessage()
-                            .setEventKey(eventKey).setScanCodeInfo(new ReqEventMenuScanCodeMessage.ScanCodeInfo(scanType, scanResult)).setBaseEventRequestMessage(baseEventRequestMessage);
+                            .setEventKey(eventKey).setScanCodeInfo(new ReqEventMenuScanCodeMessage.ScanCodeInfo(scanType, scanResult))
+                            .setBaseEventRequestMessage(baseEventRequestMessage);
                     respContent = processEventMenuScanCodeWaitMsg(wechatHelper, reqEventMenuScanCodeWaitMessage);
                 }
                 // 自定义菜单 - 弹出系统拍照发图的事件推送
@@ -137,7 +139,8 @@ public abstract class WechatEventListener extends WechatEvent {
                     List<String> picMd5Sums = new ArrayList<>(8);
                     picMd5Sums.add(picMd5Sum);
                     ReqEventMenuPicPhotoMessage reqEventMenuPicPhotoMessage = (ReqEventMenuPicPhotoMessage) new ReqEventMenuPicPhotoMessage()
-                            .setEventKey(eventKey).setSendPicsInfo(new ReqEventMenuPicPhotoMessage.SendPicsInfo(count, picMd5Sums)).setBaseEventRequestMessage(baseEventRequestMessage);
+                            .setEventKey(eventKey).setSendPicsInfo(new ReqEventMenuPicPhotoMessage.SendPicsInfo(count, picMd5Sums))
+                            .setBaseEventRequestMessage(baseEventRequestMessage);
                     respContent = processEventMenuPicSysPhoto(wechatHelper, reqEventMenuPicPhotoMessage);
                 }
                 // 自定义菜单 - 弹出拍照或者相册发图的事件推送
@@ -147,7 +150,8 @@ public abstract class WechatEventListener extends WechatEvent {
                     List<String> picMd5Sums = new ArrayList<>(8);
                     picMd5Sums.add(picMd5Sum);
                     ReqEventMenuPicPhotoMessage reqEventMenuPicPhotoOrAlbumMessage = (ReqEventMenuPicPhotoMessage) new ReqEventMenuPicPhotoMessage()
-                            .setEventKey(eventKey).setSendPicsInfo(new ReqEventMenuPicPhotoMessage.SendPicsInfo(count, picMd5Sums)).setBaseEventRequestMessage(baseEventRequestMessage);
+                            .setEventKey(eventKey).setSendPicsInfo(new ReqEventMenuPicPhotoMessage.SendPicsInfo(count, picMd5Sums))
+                            .setBaseEventRequestMessage(baseEventRequestMessage);
                     respContent = processEventMenuPicPhotoOrAlbum(wechatHelper, reqEventMenuPicPhotoOrAlbumMessage);
                 }
                 // 自定义菜单 - 弹出微信相册发图器的事件推送
@@ -157,7 +161,8 @@ public abstract class WechatEventListener extends WechatEvent {
                     List<String> picMd5Sums = new ArrayList<>(8);
                     picMd5Sums.add(picMd5Sum);
                     ReqEventMenuPicPhotoMessage reqEventMenuPicWeiXinMessage = (ReqEventMenuPicPhotoMessage) new ReqEventMenuPicPhotoMessage()
-                            .setEventKey(eventKey).setSendPicsInfo(new ReqEventMenuPicPhotoMessage.SendPicsInfo(count, picMd5Sums)).setBaseEventRequestMessage(baseEventRequestMessage);
+                            .setEventKey(eventKey).setSendPicsInfo(new ReqEventMenuPicPhotoMessage.SendPicsInfo(count, picMd5Sums))
+                            .setBaseEventRequestMessage(baseEventRequestMessage);
                     respContent = processEventMenuPicWeiXin(wechatHelper, reqEventMenuPicWeiXinMessage);
                 }
                 // 自定义菜单 - 弹出地理位置选择器的事件推送
@@ -168,7 +173,8 @@ public abstract class WechatEventListener extends WechatEvent {
                     String label = requestMap.get("Label");
                     String poiname = requestMap.get("Poiname");
                     ReqEventMenuLocationSelectMessage reqEventMenuLocationSelectMessage = (ReqEventMenuLocationSelectMessage) new ReqEventMenuLocationSelectMessage()
-                            .setEventKey(eventKey).setSendLocationInfo(new ReqEventMenuLocationSelectMessage.SendLocationInfo(locationX, locationY, scale, label, poiname)).setBaseEventRequestMessage(baseEventRequestMessage);
+                            .setEventKey(eventKey).setSendLocationInfo(new ReqEventMenuLocationSelectMessage.SendLocationInfo(locationX, locationY, scale, label, poiname))
+                            .setBaseEventRequestMessage(baseEventRequestMessage);
                     respContent = processEventMenuLocationSelect(wechatHelper, reqEventMenuLocationSelectMessage);
                 }
                 // 自定义菜单 - 点击菜单跳转小程序的事件推送

@@ -16,7 +16,7 @@ public class MyWechatEventListener extends WechatEventListener {
 
 
     @Override
-    public String processText(WechatHelper wechatHelper, ReqTextMessage reqTextMessage) throws NullParameterException {
+    public String processText(WechatHelper wechatHelper, ReqTextMessage reqTextMessage) {
         // JSONObject jsonObject = wechatHelper.generateTempQrCode("test");
         // return jsonObject.toString();
         Map<String, String[]> datas = new HashMap<>();
@@ -24,7 +24,12 @@ public class MyWechatEventListener extends WechatEventListener {
         datas.put("keyword1", new String[]{"呵呵呵"});
         datas.put("remark", new String[]{"嘿嘿嘿"});
         TemplateMessage templateMessage = wechatHelper.packageTemplateMessage("v9Rsb_rzdikFqLlEWgB9sUaxIxSPiLFF_vXaEQsGD8w", datas).setTouser(reqTextMessage.getFromUserName());
-        JSONObject jsonObject = wechatHelper.sendTemplateMessage(templateMessage);
+        JSONObject jsonObject = null;
+        try {
+            jsonObject = wechatHelper.sendTemplateMessage(templateMessage);
+        } catch (NullParameterException e) {
+            e.printStackTrace();
+        }
         return reqTextMessage.getContent() + " 收到了" + jsonObject;
     }
 

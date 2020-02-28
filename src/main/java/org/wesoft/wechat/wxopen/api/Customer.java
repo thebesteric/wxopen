@@ -1,7 +1,7 @@
 package org.wesoft.wechat.wxopen.api;
 
 import com.alibaba.fastjson.JSONObject;
-import org.wesoft.common.utils.HttpUtils;
+import org.wesoft.common.utils.web.HttpUtils;
 import org.wesoft.wechat.wxopen.client.WechatHelperSupport;
 import org.wesoft.wechat.wxopen.exception.NullParameterException;
 

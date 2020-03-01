@@ -225,26 +225,26 @@ public class WechatHelper extends WechatHelperSupport {
      * 包装 TemplateMessage
      *
      * @param templateMessageId 模板ID
-     * @param datas             Map封装格式: {key:name, value:[String[0]:value, String[1]:color]}
+     * @param items             Map封装格式: {key:name, value:[String[0]:value, String[1]:color]}
      * @param url               跳转地址
      */
-    public TemplateMessage packageTemplateMessage(String templateMessageId, Map<String, String[]> datas,
+    public TemplateMessage packageTemplateMessage(String templateMessageId, Map<String, String[]> items,
                                                   String... url) {
 
         TemplateMessage templateMessage = TemplateMessage.newInstance(url)
                 .setTemplate_id(StringUtils.trimBlank(templateMessageId));
 
         TemplateData templateData = TemplateData.getInstance();
-        if (!datas.isEmpty()) {
-            for (String key : datas.keySet()) {
+        if (!items.isEmpty()) {
+            for (String key : items.keySet()) {
                 final boolean keyword = ITEM_KEY_FIRST.equals(key) || ITEM_KEY_REMARK.equals(key) || (key.length() >= 8
                         && key.startsWith(ITEM_KEY_KEYWORD) && RegexUtils.isNumber(key.substring(7)));
                 if (keyword) {
                     TemplateItem item = TemplateItem.newInstance();
-                    if (datas.get(key) != null && datas.get(key).length > 0) {
-                        item.setValue(datas.get(key)[0]);
-                        if (datas.get(key).length > 1) {
-                            item.setColor(datas.get(key)[1]);
+                    if (items.get(key) != null && items.get(key).length > 0) {
+                        item.setValue(items.get(key)[0]);
+                        if (items.get(key).length > 1) {
+                            item.setColor(items.get(key)[1]);
                         }
                     }
                     templateData.put(key, item);

@@ -311,7 +311,7 @@ public class Guide extends WechatHelperSupport {
 
 
         /**
-         * 置粉丝标签
+         * 设置粉丝标签
          *
          * @param guideAccount 导购微信号
          * @param openid       粉丝 openid

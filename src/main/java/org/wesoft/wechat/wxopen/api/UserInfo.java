@@ -27,6 +27,18 @@ public class UserInfo extends WechatHelperSupport {
     }
 
     /**
+     * 获取用户基本信息（网页端）
+     *
+     * @param openid openid
+     * @param code   code 作为换取 access_token 的票据，每次用户授权带上的 code 将不一样，code 只能使用一次，5 分钟未被使用自动过期
+     */
+    public JSONObject getUserInfoForWeb(String openid, String code) {
+        String url = "https://api.weixin.qq.com/sns/userinfo?access_token=%s&openid=%s&lang=zh_CN";
+        url = String.format(url, getWebAccessToken(code), openid);
+        return HttpUtils.doGet(url);
+    }
+
+    /**
      * 批量获取用户基本信息
      *
      * @param openids openids

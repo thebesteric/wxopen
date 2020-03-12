@@ -48,6 +48,14 @@ public class WechatHelper extends WechatHelperSupport {
     /** 标签模块 API */
     public Tag tag;
 
+    /**
+     * 帮助类
+     *
+     * @param appID        appID
+     * @param appSecret    appSecret
+     * @param token        token
+     * @param encodeAESKey encodeAESKey
+     */
     public WechatHelper(String appID, String appSecret, String token, String encodeAESKey) {
         WechatHelperSupport.appID = appID;
         WechatHelperSupport.appSecret = appSecret;
@@ -71,59 +79,6 @@ public class WechatHelper extends WechatHelperSupport {
         this.guide = new Guide();
         this.userInfo = new UserInfo();
         this.tag = new Tag();
-    }
-
-    /**
-     * 获取网页签名
-     *
-     * @param jsapi_ticket jsapi_ticket
-     * @param url          授权地址
-     * @return Map<String, String>
-     */
-    public Map<String, Object> webSignature(String jsapi_ticket, String url) {
-        String nonce_str = UUID.randomUUID().toString();
-        String timestamp = Long.toString(System.currentTimeMillis() / 1000);
-        String urlParam;
-        String signature = "";
-        // 注意这里参数名必须全部小写，且必须有序
-        urlParam = "jsapi_ticket=" + jsapi_ticket + "&noncestr=" + nonce_str
-                + "&timestamp=" + timestamp + "&url=" + url;
-        try {
-            MessageDigest crypt = MessageDigest.getInstance("SHA-1");
-            crypt.reset();
-            crypt.update(urlParam.getBytes(StandardCharsets.UTF_8));
-            signature = byteToHex(crypt.digest());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        Map<String, Object> ret = new HashMap<>();
-        ret.put("url", url);
-        ret.put("appId", appID);
-        ret.put("jsapi_ticket", jsapi_ticket);
-        ret.put("nonceStr", nonce_str);
-        ret.put("timestamp", timestamp);
-        ret.put("signature", signature);
-        return ret;
-    }
-
-    /**
-     * 获取 JSAPI_TICKET
-     *
-     * @return String
-     */
-    public String getJsApiTicket() {
-        String JsApiTicket = (String) LocalCache.getInstance().get(WechatConstant.JSAPI_TICKET);
-        if (StringUtils.isEmpty(JsApiTicket)) {
-            String url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=%s&type=jsapi";
-            url = String.format(url, appID, appSecret);
-            JSONObject ret = HttpUtils.doGet(url);
-            if (ret != null) {
-                logger.info(ret.toString());
-                JsApiTicket = (String) ret.get(WechatConstant.JSAPI_TICKET);
-                LocalCache.getInstance().put(WechatConstant.JSAPI_TICKET, JsApiTicket, ret.getLong(WechatConstant.EXPIRES_IN));
-            }
-        }
-        return JsApiTicket;
     }
 
     /**

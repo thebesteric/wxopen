@@ -49,6 +49,13 @@ public class WechatHelper extends WechatHelperSupport {
     public Tag tag;
 
     /**
+     * 获取 AppID
+     */
+    public String getAppId() {
+        return WechatHelperSupport.appID;
+    }
+
+    /**
      * 帮助类
      *
      * @param appID        appID
@@ -164,7 +171,7 @@ public class WechatHelper extends WechatHelperSupport {
         InputStream inputStream = HttpUtils.download(url);
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024];
-        int len = 0;
+        int len;
         while ((len = inputStream.read(buffer)) != -1) {
             outStream.write(buffer, 0, len);
         }

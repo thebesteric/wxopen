@@ -19,6 +19,7 @@ import org.wesoft.wechat.wxopen.domain.TemplateItem;
 import org.wesoft.wechat.wxopen.domain.TemplateMessage;
 import org.wesoft.wechat.wxopen.domain.message.response.ResNewsMessage;
 import org.wesoft.wechat.wxopen.exception.NullParameterException;
+import sun.misc.BASE64Decoder;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -165,14 +166,43 @@ public class WechatHelper extends WechatHelperSupport {
      * @param ticket     ticket
      * @param targetPath 保存路径
      */
-    public void saveCustomQrCode(String ticket, String targetPath) throws Exception {
+    public void saveCustomQrCodeByTicket(String ticket, String targetPath) throws IOException {
         String url = "https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=%s";
         url = String.format(url, ticket);
+        saveCustomQrCodeByUrl(url, targetPath);
+    }
+
+    /**
+     * 保存自定义二维码
+     *
+     * @param base64Str  base64Str
+     * @param targetPath 保存路径
+     */
+    public void saveCustomQrCodeByBase64Str(String base64Str, String targetPath) throws IOException {
+        int index = base64Str.indexOf(",");
+        if (index != -1) {
+            base64Str = base64Str.substring(index + 1);
+        }
+        byte[] bytes = new BASE64Decoder().decodeBuffer(base64Str);
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
+        writeToFile(inputStream, targetPath);
+    }
+
+    /**
+     * 保存自定义二维码
+     *
+     * @param url        url
+     * @param targetPath 保存路径
+     */
+    public void saveCustomQrCodeByUrl(String url, String targetPath) throws IOException {
         InputStream inputStream = HttpUtils.download(url);
+        writeToFile(inputStream, targetPath);
+    }
+
+    private void writeToFile(InputStream inputStream, String targetPath) throws IOException {
         ByteArrayOutputStream outStream = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024];
-        int len;
-        while ((len = inputStream.read(buffer)) != -1) {
+        for (int len; (len = inputStream.read(buffer)) != -1; ) {
             outStream.write(buffer, 0, len);
         }
         FileOutputStream fileOutputStream = new FileOutputStream(new File(targetPath));

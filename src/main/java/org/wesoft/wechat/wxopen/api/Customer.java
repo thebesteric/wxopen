@@ -72,9 +72,9 @@ public class Customer extends WechatHelperSupport {
     public JSONObject sendText(String toUser, String content) throws NullParameterException {
         Map<String, Object> _params = new HashMap<>();
         _params.put("content", content);
-        Map<String, Object> params = getMessageParams(toUser, "text");
+        JSONObject params = getMessageParams(toUser, "text");
         params.put("text", _params);
-        return HttpUtils.doPost(getCustomerUrl(), params);
+        return HttpUtils.doPost(getCustomerSendMessageUrl(), params);
     }
 
     /**
@@ -86,9 +86,9 @@ public class Customer extends WechatHelperSupport {
     public JSONObject sendImage(String toUser, String mediaId) throws NullParameterException {
         Map<String, Object> _params = new HashMap<>();
         _params.put("media_id", mediaId);
-        Map<String, Object> params = getMessageParams(toUser, "image");
+        JSONObject params = getMessageParams(toUser, "image");
         params.put("image", _params);
-        return HttpUtils.doPost(getCustomerUrl(), params);
+        return HttpUtils.doPost(getCustomerSendMessageUrl(), params);
     }
 
     /**
@@ -100,9 +100,9 @@ public class Customer extends WechatHelperSupport {
     public JSONObject sendVoice(String toUser, String mediaId) throws NullParameterException {
         Map<String, Object> _params = new HashMap<>();
         _params.put("media_id", mediaId);
-        Map<String, Object> params = getMessageParams(toUser, "voice");
+        JSONObject params = getMessageParams(toUser, "voice");
         params.put("voice", _params);
-        return HttpUtils.doPost(getCustomerUrl(), params);
+        return HttpUtils.doPost(getCustomerSendMessageUrl(), params);
     }
 
     /**
@@ -120,9 +120,9 @@ public class Customer extends WechatHelperSupport {
         _params.put("description", description);
         _params.put("media_id", mediaId);
         _params.put("thumb_media_id", thumbMediaId);
-        Map<String, Object> params = getMessageParams(toUser, "video");
+        JSONObject params = getMessageParams(toUser, "video");
         params.put("video", _params);
-        return HttpUtils.doPost(getCustomerUrl(), params);
+        return HttpUtils.doPost(getCustomerSendMessageUrl(), params);
     }
 
     /**
@@ -142,9 +142,9 @@ public class Customer extends WechatHelperSupport {
         _params.put("musicUrl", musicUrl);
         _params.put("hqmusicurl", hqMusicUrl);
         _params.put("thumb_media_id", thumbMediaId);
-        Map<String, Object> params = getMessageParams(toUser, "music");
+        JSONObject params = getMessageParams(toUser, "music");
         params.put("music", _params);
-        return HttpUtils.doPost(getCustomerUrl(), params);
+        return HttpUtils.doPost(getCustomerSendMessageUrl(), params);
     }
 
     /**
@@ -163,9 +163,9 @@ public class Customer extends WechatHelperSupport {
         _params.put("url", redirectUrl);
         _params.put("picurl", picUrl);
         List<Map<String, Object>> list = Collections.singletonList(_params);
-        Map<String, Object> params = getMessageParams(toUser, "news");
+        JSONObject params = getMessageParams(toUser, "news");
         params.put("news", list);
-        return HttpUtils.doPost(getCustomerUrl(), params);
+        return HttpUtils.doPost(getCustomerSendMessageUrl(), params);
     }
 
     /**
@@ -177,9 +177,9 @@ public class Customer extends WechatHelperSupport {
     public JSONObject sendMpNews(String toUser, String mediaId) throws NullParameterException {
         Map<String, Object> _params = new HashMap<>();
         _params.put("media_id", mediaId);
-        Map<String, Object> params = getMessageParams(toUser, "mpnews");
+        JSONObject params = getMessageParams(toUser, "mpnews");
         params.put("mpnews", _params);
-        return HttpUtils.doPost(getCustomerUrl(), params);
+        return HttpUtils.doPost(getCustomerSendMessageUrl(), params);
     }
 
     /**
@@ -206,9 +206,9 @@ public class Customer extends WechatHelperSupport {
         _params.put("head_content", headContent);
         _params.put("list", list);
         _params.put("tail_content", tailContent);
-        Map<String, Object> params = getMessageParams(toUser, "msgmenu");
+        JSONObject params = getMessageParams(toUser, "msgmenu");
         params.put("mpnews", _params);
-        return HttpUtils.doPost(getCustomerUrl(), params);
+        return HttpUtils.doPost(getCustomerSendMessageUrl(), params);
     }
 
     /**
@@ -222,9 +222,9 @@ public class Customer extends WechatHelperSupport {
     public JSONObject sendWxCard(String toUser, String cardId) throws NullParameterException {
         Map<String, Object> _params = new HashMap<>();
         _params.put("card_id", cardId);
-        Map<String, Object> params = getMessageParams(toUser, "wxcard");
+        JSONObject params = getMessageParams(toUser, "wxcard");
         params.put("wxcard", _params);
-        return HttpUtils.doPost(getCustomerUrl(), params);
+        return HttpUtils.doPost(getCustomerSendMessageUrl(), params);
     }
 
     /**
@@ -242,21 +242,21 @@ public class Customer extends WechatHelperSupport {
         _params.put("appid", appId);
         _params.put("pagepath", pagePath);
         _params.put("thumb_media_id", thumbMediaId);
-        Map<String, Object> params = getMessageParams(toUser, "miniprogrampage");
+        JSONObject params = getMessageParams(toUser, "miniprogrampage");
         params.put("miniprogrampage", _params);
-        return HttpUtils.doPost(getCustomerUrl(), params);
+        return HttpUtils.doPost(getCustomerSendMessageUrl(), params);
     }
 
-    private String getCustomerUrl() throws NullParameterException {
+    private String getCustomerSendMessageUrl() throws NullParameterException {
         String url = "https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=%s";
         return String.format(url, getAccessToken());
     }
 
-    private Map<String, Object> getMessageParams(String toUser, String msgtype) {
-        Map<String, Object> params = new HashMap<>(16);
-        params.put("touser", toUser);
-        params.put("msgtype", msgtype);
-        return params;
+    private JSONObject getMessageParams(String toUser, String msgtype) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("touser", toUser);
+        jsonObject.put("msgtype", msgtype);
+        return jsonObject;
     }
 
     private JSONObject packageCustomer(String account, String nickname, String password) {

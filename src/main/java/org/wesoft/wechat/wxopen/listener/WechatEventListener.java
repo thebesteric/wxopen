@@ -6,6 +6,7 @@ import org.wesoft.wechat.wxopen.base.BaseRequestMessage;
 import org.wesoft.wechat.wxopen.client.WechatHelper;
 import org.wesoft.wechat.wxopen.constant.WechatConstant;
 import org.wesoft.wechat.wxopen.domain.message.request.*;
+import org.wesoft.wechat.wxopen.domain.message.response.ResImageMessage;
 import org.wesoft.wechat.wxopen.domain.message.response.RespTextMessage;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,7 +21,7 @@ public abstract class WechatEventListener extends WechatEvent {
         String respMessage = null;
 
         try {
-            String respContent = "请求处理异常，请稍候尝试";
+            Object respContent = "请求处理异常，请稍候尝试";
 
             // xml 请求解析
             Map<String, String> requestMap = parseXml(request, helper);
@@ -195,8 +196,8 @@ public abstract class WechatEventListener extends WechatEvent {
             }
 
             // 返回消息处理
-            if (StringUtils.isNotEmpty(respContent)) {
-                respTextMessage.setContent(respContent);
+            if (respContent.getClass().equals(String.class)) {
+                respTextMessage.setContent((String) respContent);
                 respMessage = helper.responseMessageToXml(respTextMessage);
             } else {
                 respMessage = "";
@@ -264,4 +265,5 @@ public abstract class WechatEventListener extends WechatEvent {
         }
         return wechatHelper.parseXml(request);
     }
+
 }

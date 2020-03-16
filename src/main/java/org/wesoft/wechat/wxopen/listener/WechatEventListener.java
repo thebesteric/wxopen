@@ -3,6 +3,7 @@ package org.wesoft.wechat.wxopen.listener;
 import org.wesoft.common.utils.StringUtils;
 import org.wesoft.wechat.wxopen.base.BaseEventRequestMessage;
 import org.wesoft.wechat.wxopen.base.BaseRequestMessage;
+import org.wesoft.wechat.wxopen.base.BaseResponseMessage;
 import org.wesoft.wechat.wxopen.client.WechatHelper;
 import org.wesoft.wechat.wxopen.constant.WechatConstant;
 import org.wesoft.wechat.wxopen.domain.message.request.*;
@@ -196,11 +197,11 @@ public abstract class WechatEventListener extends WechatEvent {
             }
 
             // 返回消息处理
-            if (respContent.getClass().equals(String.class)) {
-                respTextMessage.setContent((String) respContent);
+            if (respContent == null || respContent.getClass().equals(String.class)) {
+                respTextMessage.setContent(respContent == null ? "" : (String) respContent);
                 respMessage = helper.responseMessageToXml(respTextMessage);
             } else {
-                respMessage = "";
+                respMessage = helper.responseMessageToXml((BaseResponseMessage) respContent);
             }
 
         } catch (Exception ex) {

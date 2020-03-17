@@ -98,17 +98,17 @@ public class WechatHelperSupport extends WechatConstant {
     /**
      * 获取网页签名
      *
-     * @param jsapi_ticket jsapi_ticket
-     * @param url          授权地址
+     * @param url 授权地址
      * @return Map<String, String>
      */
-    public WebSignature webSignature(String jsapi_ticket, String url) {
+    public WebSignature webSignature(String url) {
         String nonce_str = UUID.randomUUID().toString();
         String timestamp = Long.toString(System.currentTimeMillis() / 1000);
         String urlParam;
         String signature = "";
         // 注意这里参数名必须全部小写，且必须有序
-        urlParam = "jsapi_ticket=" + jsapi_ticket + "&noncestr=" + nonce_str
+        String jsApiTicket = getJsApiTicket();
+        urlParam = "jsapi_ticket=" + jsApiTicket + "&noncestr=" + nonce_str
                 + "&timestamp=" + timestamp + "&url=" + url;
         try {
             MessageDigest crypt = MessageDigest.getInstance("SHA-1");
@@ -121,7 +121,7 @@ public class WechatHelperSupport extends WechatConstant {
         Map<String, Object> ret = new HashMap<>();
         ret.put("url", url);
         ret.put("appId", appID);
-        ret.put("jsapi_ticket", jsapi_ticket);
+        ret.put("jsapi_ticket", jsApiTicket);
         ret.put("nonceStr", nonce_str);
         ret.put("timestamp", timestamp);
         ret.put("signature", signature);

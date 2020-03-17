@@ -197,9 +197,15 @@ public abstract class WechatEventListener extends WechatEvent {
             }
 
             // 返回消息处理
-            if (respContent == null || respContent.getClass().equals(String.class)) {
-                respTextMessage.setContent(respContent == null ? "" : (String) respContent);
-                respMessage = helper.responseMessageToXml(respTextMessage);
+            if (respContent == null) {
+                respMessage = "success";
+            } else if (respContent.getClass().equals(String.class)) {
+                if (((String) respContent).length() == 0) {
+                    respMessage = "success";
+                } else {
+                    respTextMessage.setContent((String) respContent);
+                    respMessage = helper.responseMessageToXml(respTextMessage);
+                }
             } else {
                 respMessage = helper.responseMessageToXml((BaseResponseMessage) respContent);
             }

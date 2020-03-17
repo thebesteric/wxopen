@@ -101,13 +101,13 @@ public class WechatHelperSupport extends WechatConstant {
      * @param url 授权地址
      * @return Map<String, String>
      */
-    public WebSignature webSignature(String url) {
+    public WebSignature webSignature(String url) throws NullParameterException {
         String nonce_str = UUID.randomUUID().toString();
         String timestamp = Long.toString(System.currentTimeMillis() / 1000);
         String urlParam;
         String signature = "";
         // 注意这里参数名必须全部小写，且必须有序
-        String jsApiTicket = getJsApiTicket();
+        String jsApiTicket = this.getJsApiTicket();
         urlParam = "jsapi_ticket=" + jsApiTicket + "&noncestr=" + nonce_str
                 + "&timestamp=" + timestamp + "&url=" + url;
         try {
@@ -135,11 +135,11 @@ public class WechatHelperSupport extends WechatConstant {
      *
      * @return String
      */
-    public String getJsApiTicket() {
+    public String getJsApiTicket() throws NullParameterException {
         String JsApiTicket = (String) LocalCache.getInstance().get(WechatConstant.JSAPI_TICKET);
         if (StringUtils.isEmpty(JsApiTicket)) {
             String url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=%s&type=jsapi";
-            url = String.format(url, appID, appSecret);
+            url = String.format(url, getAccessToken());
             JSONObject ret = HttpUtils.doGet(url);
             if (ret != null) {
                 logger.info(ret.toString());

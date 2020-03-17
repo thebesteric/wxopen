@@ -96,6 +96,39 @@ public class WechatHelperSupport extends WechatConstant {
     }
 
     /**
+     * 通过 code 换取网页授权 access_token
+     *
+     * @param code code 作为换取 access_token 的票据，每次用户授权带上的 code 将不一样，code 只能使用一次，5分钟未被使用自动过期
+     * @return NetOAuthAccessToken
+     */
+    public NetOAuthAccessToken getWebAccessToken(String code) {
+        String url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code";
+        url = String.format(url, appID, appSecret, code);
+        JSONObject jsonObject = HttpUtils.doGet(url);
+        return jsonObject.toJavaObject(NetOAuthAccessToken.class);
+    }
+
+    /**
+     * 获取 JSAPI_TICKET
+     *
+     * @return String
+     */
+    public String getJsApiTicket() throws NullParameterException {
+        String JsApiTicket = (String) LocalCache.getInstance().get(WechatConstant.JSAPI_TICKET);
+        if (StringUtils.isEmpty(JsApiTicket)) {
+            String url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=%s&type=jsapi";
+            url = String.format(url, getAccessToken());
+            JSONObject ret = HttpUtils.doGet(url);
+            if (ret != null) {
+                logger.info(ret.toString());
+                JsApiTicket = (String) ret.get(WechatConstant.JSAPI_TICKET);
+                LocalCache.getInstance().put(WechatConstant.JSAPI_TICKET, JsApiTicket, ret.getLong(WechatConstant.EXPIRES_IN));
+            }
+        }
+        return JsApiTicket;
+    }
+
+    /**
      * 获取网页签名
      *
      * @param url 授权地址
@@ -131,26 +164,6 @@ public class WechatHelperSupport extends WechatConstant {
     }
 
     /**
-     * 获取 JSAPI_TICKET
-     *
-     * @return String
-     */
-    public String getJsApiTicket() throws NullParameterException {
-        String JsApiTicket = (String) LocalCache.getInstance().get(WechatConstant.JSAPI_TICKET);
-        if (StringUtils.isEmpty(JsApiTicket)) {
-            String url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=%s&type=jsapi";
-            url = String.format(url, getAccessToken());
-            JSONObject ret = HttpUtils.doGet(url);
-            if (ret != null) {
-                logger.info(ret.toString());
-                JsApiTicket = (String) ret.get(WechatConstant.JSAPI_TICKET);
-                LocalCache.getInstance().put(WechatConstant.JSAPI_TICKET, JsApiTicket, ret.getLong(WechatConstant.EXPIRES_IN));
-            }
-        }
-        return JsApiTicket;
-    }
-
-    /**
      * 微信授权
      * <p>
      * 生成一个 URL 连接，如果用户同意授权，页面将跳转至 redirect_uri/?code=CODE&state=STATE
@@ -164,19 +177,6 @@ public class WechatHelperSupport extends WechatConstant {
     public String webAuth(String redirectUri, String scope, String state) {
         String url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=%s&redirect_uri=%s&response_type=code&scope=%s&state=%s#wechat_redirect";
         return String.format(url, appID, redirectUri, scope, state);
-    }
-
-    /**
-     * 通过 code 换取网页授权 access_token
-     *
-     * @param code code 作为换取 access_token 的票据，每次用户授权带上的 code 将不一样，code 只能使用一次，5分钟未被使用自动过期
-     * @return NetOAuthAccessToken
-     */
-    public NetOAuthAccessToken getWebAccessToken(String code) {
-        String url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code";
-        url = String.format(url, appID, appSecret, code);
-        JSONObject jsonObject = HttpUtils.doGet(url);
-        return jsonObject.toJavaObject(NetOAuthAccessToken.class);
     }
 
     /**

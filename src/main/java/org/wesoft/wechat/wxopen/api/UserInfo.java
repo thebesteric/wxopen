@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import org.wesoft.common.utils.StringUtils;
 import org.wesoft.common.utils.web.HttpUtils;
 import org.wesoft.wechat.wxopen.client.WechatHelperSupport;
+import org.wesoft.wechat.wxopen.domain.NetOAuthAccessToken;
 import org.wesoft.wechat.wxopen.exception.InvalidParameterException;
 import org.wesoft.wechat.wxopen.exception.NullParameterException;
 
@@ -32,9 +33,21 @@ public class UserInfo extends WechatHelperSupport {
      * @param openid openid
      * @param code   code 作为换取 access_token 的票据，每次用户授权带上的 code 将不一样，code 只能使用一次，5 分钟未被使用自动过期
      */
-    public JSONObject getUserInfoForWeb(String openid, String code) {
+    public JSONObject getUserInfoForWebCode(String openid, String code) {
         String url = "https://api.weixin.qq.com/sns/userinfo?access_token=%s&openid=%s&lang=zh_CN";
-        url = String.format(url, getWebAccessToken(code), openid);
+        url = String.format(url, getWebAccessToken(code).getAccess_token(), openid);
+        return HttpUtils.doGet(url);
+    }
+
+    /**
+     * 获取用户基本信息（网页端）
+     *
+     * @param openid         openid
+     * @param webAccessToken webAccessToken
+     */
+    public JSONObject getUserInfoForWebAccessToken(String openid, String webAccessToken) {
+        String url = "https://api.weixin.qq.com/sns/userinfo?access_token=%s&openid=%s&lang=zh_CN";
+        url = String.format(url, webAccessToken, openid);
         return HttpUtils.doGet(url);
     }
 

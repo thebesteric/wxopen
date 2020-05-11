@@ -21,6 +21,13 @@ import java.util.Map;
 @Getter
 public class Guide extends WechatHelperSupport {
 
+    private String appID, appSecret;
+
+    public Guide(String appID, String appSecret) {
+        this.appID = appID;
+        this.appSecret = appSecret;
+    }
+
     /**
      * 导购管理 API
      */
@@ -449,6 +456,6 @@ public class Guide extends WechatHelperSupport {
      * 如果 Guide 作为独立模块使用的话，需要重写改方法
      */
     public String getAloneOrNotAccessToken() throws NullParameterException {
-        return getAccessToken();
+        return getAccessToken(appID, appSecret);
     }
 }

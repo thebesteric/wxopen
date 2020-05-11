@@ -18,7 +18,7 @@ public class WechatThirdHelperSupport extends WechatHelperSupport {
 
     private static final Logger logger = LoggerFactory.getLogger(WechatThirdHelperSupport.class);
 
-    public static String componentAppId, componentAppSecret, componentToken, componentVerifyTicket;
+    public static String componentVerifyTicket;
 
     public WXBizMsgCrypt crypt;
 
@@ -46,47 +46,6 @@ public class WechatThirdHelperSupport extends WechatHelperSupport {
             componentVerifyTicket = messageMap.get("ComponentVerifyTicket");
         }
         return componentVerifyTicket;
-    }
-
-    /**
-     * 获取 ComponentAccessToken
-     */
-    public String getComponentAccessToken() {
-        String componentAccessToken = (String) LocalCache.getInstance().get(WechatConstant.ACCESS_TOKEN);
-        if (StringUtils.isEmpty(componentAccessToken)) {
-            String url = "https://api.weixin.qq.com/cgi-bin/component/api_component_token";
-            JSONObject params = new JSONObject();
-            params.put("component_appid", componentAppId);
-            params.put("component_appsecret", componentAppSecret);
-            params.put("component_verify_ticket", componentVerifyTicket);
-            JSONObject ret = HttpUtils.doPost(url, params);
-            if (ret != null) {
-                logger.info(ret.toString());
-                componentAccessToken = (String) ret.get(WechatConstant.COMPONENT_ACCESS_TOKEN);
-                LocalCache.getInstance().put(WechatConstant.COMPONENT_ACCESS_TOKEN, componentAccessToken, ret.getLong(WechatConstant.EXPIRES_IN));
-            }
-        }
-        return componentAccessToken;
-    }
-
-    /**
-     * 获取 PreAuthCode
-     */
-    public String getPreAuthCode() {
-        String preAuthCode = (String) LocalCache.getInstance().get(WechatConstant.PRE_AUTH_CODE);
-        if (StringUtils.isEmpty(preAuthCode)) {
-            String url = "https://api.weixin.qq.com/cgi-bin/component/api_create_preauthcode?component_access_token=%s";
-            url = String.format(url, getComponentAccessToken());
-            JSONObject params = new JSONObject();
-            params.put("component_appid", componentAppId);
-            JSONObject ret = HttpUtils.doPost(url, params);
-            if (ret != null) {
-                logger.info(ret.toString());
-                preAuthCode = (String) ret.get(WechatConstant.PRE_AUTH_CODE);
-                LocalCache.getInstance().put(WechatConstant.PRE_AUTH_CODE, preAuthCode, ret.getLong(WechatConstant.EXPIRES_IN));
-            }
-        }
-        return preAuthCode;
     }
 
     /**

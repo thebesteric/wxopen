@@ -15,6 +15,13 @@ import java.util.*;
  */
 public class Customer extends WechatHelperSupport {
 
+    private String appID, appSecret;
+
+    public Customer(String appID, String appSecret) {
+        this.appID = appID;
+        this.appSecret = appSecret;
+    }
+
     /**
      * 添加客服
      *
@@ -24,7 +31,7 @@ public class Customer extends WechatHelperSupport {
      */
     public JSONObject add(String account, String nickname, String password) throws NullParameterException {
         String url = "https://api.weixin.qq.com/customservice/kfaccount/add?access_token=%s";
-        url = String.format(url, getAccessToken());
+        url = String.format(url, getAccessToken(appID, appSecret));
         return HttpUtils.doPost(url, packageCustomer(account, nickname, password));
     }
 
@@ -37,7 +44,7 @@ public class Customer extends WechatHelperSupport {
      */
     public JSONObject update(String account, String nickname, String password) throws NullParameterException {
         String url = "https://api.weixin.qq.com/customservice/kfaccount/update?access_token=%s";
-        url = String.format(url, getAccessToken());
+        url = String.format(url, getAccessToken(appID, appSecret));
         return HttpUtils.doPost(url, packageCustomer(account, nickname, password));
     }
 
@@ -50,7 +57,7 @@ public class Customer extends WechatHelperSupport {
      */
     public JSONObject delete(String account, String nickname, String password) throws NullParameterException {
         String url = "https://api.weixin.qq.com/customservice/kfaccount/del?access_token=%s";
-        url = String.format(url, getAccessToken());
+        url = String.format(url, getAccessToken(appID, appSecret));
         return HttpUtils.doPost(url, packageCustomer(account, nickname, password));
     }
 
@@ -59,7 +66,7 @@ public class Customer extends WechatHelperSupport {
      */
     public JSONObject list() throws NullParameterException {
         String url = "https://api.weixin.qq.com/cgi-bin/customservice/getkflist?access_token=%s";
-        url = String.format(url, getAccessToken());
+        url = String.format(url, getAccessToken(appID, appSecret));
         return HttpUtils.doGet(url);
     }
 
@@ -249,7 +256,7 @@ public class Customer extends WechatHelperSupport {
 
     private String getCustomerSendMessageUrl() throws NullParameterException {
         String url = "https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=%s";
-        return String.format(url, getAccessToken());
+        return String.format(url, getAccessToken(appID, appSecret));
     }
 
     private JSONObject getMessageParams(String toUser, String msgtype) {

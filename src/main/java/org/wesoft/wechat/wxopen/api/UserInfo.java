@@ -16,6 +16,13 @@ import java.util.List;
  */
 public class UserInfo extends WechatHelperSupport {
 
+    private String appID, appSecret;
+
+    public UserInfo(String appID, String appSecret) {
+        this.appID = appID;
+        this.appSecret = appSecret;
+    }
+
     /**
      * 获取用户基本信息
      *
@@ -23,7 +30,7 @@ public class UserInfo extends WechatHelperSupport {
      */
     public JSONObject getUserInfo(String openid) throws NullParameterException {
         String url = "https://api.weixin.qq.com/cgi-bin/user/info?access_token=%s&openid=%s&lang=zh_CN";
-        url = String.format(url, getAccessToken(), openid);
+        url = String.format(url, getAccessToken(appID, appSecret), openid);
         return HttpUtils.doGet(url);
     }
 
@@ -35,7 +42,7 @@ public class UserInfo extends WechatHelperSupport {
      */
     public JSONObject getUserInfoForWebCode(String openid, String code) {
         String url = "https://api.weixin.qq.com/sns/userinfo?access_token=%s&openid=%s&lang=zh_CN";
-        url = String.format(url, getWebAccessToken(code).getAccess_token(), openid);
+        url = String.format(url, getWebAccessToken(appID, appSecret, code).getAccess_token(), openid);
         return HttpUtils.doGet(url);
     }
 
@@ -58,7 +65,7 @@ public class UserInfo extends WechatHelperSupport {
      */
     public JSONObject batchGetUserInfo(List<String> openids) throws NullParameterException {
         String url = "https://api.weixin.qq.com/cgi-bin/user/info/batchget?access_token=%s";
-        url = String.format(url, getAccessToken());
+        url = String.format(url, getAccessToken(appID, appSecret));
         List<JSONObject> openidList = new ArrayList<>();
         for (String openid : openids) {
             JSONObject param = new JSONObject();
@@ -78,7 +85,7 @@ public class UserInfo extends WechatHelperSupport {
      */
     public JSONObject getOpenidList(String nextOpenid) throws NullParameterException {
         String url = "https://api.weixin.qq.com/cgi-bin/user/get?access_token=%s&next_openid=%s";
-        url = String.format(url, getAccessToken(), nextOpenid);
+        url = String.format(url, getAccessToken(appID, appSecret), nextOpenid);
         return HttpUtils.doGet(url);
     }
 
@@ -91,7 +98,7 @@ public class UserInfo extends WechatHelperSupport {
     public JSONObject updateRemark(String openid, String remark) throws NullParameterException, InvalidParameterException {
         if (StringUtils.isNotEmpty(remark) && remark.length() <= 30) {
             String url = "https://api.weixin.qq.com/cgi-bin/user/info/updateremark?access_token=%s";
-            url = String.format(url, getAccessToken());
+            url = String.format(url, getAccessToken(appID, appSecret));
             JSONObject param = new JSONObject();
             param.put("openid", openid);
             param.put("remark", remark);
@@ -107,7 +114,7 @@ public class UserInfo extends WechatHelperSupport {
      */
     public JSONObject getBlackList(String next_openid) throws NullParameterException {
         String url = "https://api.weixin.qq.com/cgi-bin/tags/members/getblacklist?access_token=%s";
-        url = String.format(url, getAccessToken());
+        url = String.format(url, getAccessToken(appID, appSecret));
         JSONObject param = new JSONObject();
         param.put("begin_openid", next_openid);
         return HttpUtils.doPost(url, param);
@@ -121,7 +128,7 @@ public class UserInfo extends WechatHelperSupport {
     public JSONObject batchToBlackList(List<String> openids) throws NullParameterException, InvalidParameterException {
         if (!openids.isEmpty() && openids.size() <= 20) {
             String url = "https://api.weixin.qq.com/cgi-bin/tags/members/batchblacklist?access_token=%s";
-            url = String.format(url, getAccessToken());
+            url = String.format(url, getAccessToken(appID, appSecret));
             JSONObject param = new JSONObject();
             param.put("openid_list", openids);
             return HttpUtils.doPost(url, param);
@@ -137,7 +144,7 @@ public class UserInfo extends WechatHelperSupport {
     public JSONObject batchToUnBlackList(List<String> openids) throws NullParameterException, InvalidParameterException {
         if (!openids.isEmpty() && openids.size() <= 20) {
             String url = "https://api.weixin.qq.com/cgi-bin/tags/members/batchunblacklist?access_token=%s";
-            url = String.format(url, getAccessToken());
+            url = String.format(url, getAccessToken(appID, appSecret));
             JSONObject param = new JSONObject();
             param.put("openid_list", openids);
             return HttpUtils.doPost(url, param);

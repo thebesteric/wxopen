@@ -38,8 +38,6 @@ public class WechatHelperSupport extends WechatConstant {
 
     private static final Logger logger = LoggerFactory.getLogger(WechatHelperSupport.class);
 
-    public static String appID, appSecret, token;
-
     public String msgSignature, signature, timestamp, nonce;
 
     public WXBizMsgCrypt crypt;
@@ -77,8 +75,8 @@ public class WechatHelperSupport extends WechatConstant {
      *
      * @return String
      */
-    public String getAccessToken() throws NullParameterException {
-        String accessToken = (String) LocalCache.getInstance().get(WechatConstant.ACCESS_TOKEN);
+    public String getAccessToken(String appID, String appSecret) throws NullParameterException {
+        String accessToken = (String) LocalCache.getInstance().get(WechatConstant.ACCESS_TOKEN_PREFIX + appID);
         if (StringUtils.isEmpty(accessToken)) {
             if (StringUtils.isEmpty(appID) || StringUtils.isEmpty(appSecret)) {
                 throw new NullParameterException("AppID and AppSecret must be not null");
@@ -87,9 +85,9 @@ public class WechatHelperSupport extends WechatConstant {
             url = String.format(url, appID, appSecret);
             JSONObject ret = HttpUtils.doGet(url);
             if (ret != null) {
-                logger.info(ret.toString());
-                accessToken = (String) ret.get(WechatConstant.ACCESS_TOKEN);
-                LocalCache.getInstance().put(WechatConstant.ACCESS_TOKEN, accessToken, ret.getLong(WechatConstant.EXPIRES_IN));
+                logger.info(ACCESS_TOKEN_PREFIX + appID + "_" + ret.toString());
+                accessToken = ret.getString("access_token");
+                LocalCache.getInstance().put(WechatConstant.ACCESS_TOKEN_PREFIX + appID, accessToken, ret.getLong(WechatConstant.EXPIRES_IN));
             }
         }
         return accessToken;
@@ -101,130 +99,11 @@ public class WechatHelperSupport extends WechatConstant {
      * @param code code 作为换取 access_token 的票据，每次用户授权带上的 code 将不一样，code 只能使用一次，5分钟未被使用自动过期
      * @return NetOAuthAccessToken
      */
-    public NetOAuthAccessToken getWebAccessToken(String code) {
+    public NetOAuthAccessToken getWebAccessToken(String appID, String appSecret, String code) {
         String url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=%s&secret=%s&code=%s&grant_type=authorization_code";
         url = String.format(url, appID, appSecret, code);
         JSONObject jsonObject = HttpUtils.doGet(url);
         return jsonObject.toJavaObject(NetOAuthAccessToken.class);
-    }
-
-    /**
-     * 获取 JSAPI_TICKET
-     *
-     * @return String
-     */
-    public String getJsApiTicket() throws NullParameterException {
-        String JsApiTicket = (String) LocalCache.getInstance().get(WechatConstant.JSAPI_TICKET);
-        if (StringUtils.isEmpty(JsApiTicket)) {
-            String url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=%s&type=jsapi";
-            url = String.format(url, getAccessToken());
-            JSONObject ret = HttpUtils.doGet(url);
-            if (ret != null) {
-                logger.info(ret.toString());
-                JsApiTicket = (String) ret.get(WechatConstant.JSAPI_TICKET);
-                LocalCache.getInstance().put(WechatConstant.JSAPI_TICKET, JsApiTicket, ret.getLong(WechatConstant.EXPIRES_IN));
-            }
-        }
-        return JsApiTicket;
-    }
-
-    /**
-     * 获取网页签名
-     *
-     * @param url 授权地址
-     * @return Map<String, String>
-     */
-    public WebSignature webSignature(String url) throws NullParameterException {
-        String nonce_str = UUID.randomUUID().toString();
-        String timestamp = Long.toString(System.currentTimeMillis() / 1000);
-        String urlParam;
-        String signature = "";
-        // 注意这里参数名必须全部小写，且必须有序
-        String jsApiTicket = this.getJsApiTicket();
-        urlParam = "jsapi_ticket=" + jsApiTicket + "&noncestr=" + nonce_str
-                + "&timestamp=" + timestamp + "&url=" + url;
-        try {
-            MessageDigest crypt = MessageDigest.getInstance("SHA-1");
-            crypt.reset();
-            crypt.update(urlParam.getBytes(StandardCharsets.UTF_8));
-            signature = byteToHex(crypt.digest());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        Map<String, Object> ret = new HashMap<>();
-        ret.put("url", url);
-        ret.put("appId", appID);
-        ret.put("jsapi_ticket", jsApiTicket);
-        ret.put("nonceStr", nonce_str);
-        ret.put("timestamp", timestamp);
-        ret.put("signature", signature);
-
-        JSONObject jsonObject = new JSONObject(ret);
-        return jsonObject.toJavaObject(WebSignature.class);
-    }
-
-    /**
-     * 微信授权
-     * <p>
-     * 生成一个 URL 连接，如果用户同意授权，页面将跳转至 redirect_uri/?code=CODE&state=STATE
-     * code 作为换取 access_token 的票据
-     *
-     * @param redirectUri 回调 URL
-     * @param scope       应用授权作用域 snsapi_base || snsapi_userinfo
-     * @param state       重定向后的 state 参数
-     * @return auth Url
-     */
-    public String webAuth(String redirectUri, String scope, String state) {
-        String url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=%s&redirect_uri=%s&response_type=code&scope=%s&state=%s#wechat_redirect";
-        return String.format(url, appID, redirectUri, scope, state);
-    }
-
-    /**
-     * 通过 refreshToken 刷新 access_token
-     *
-     * @param refreshToken 用户刷新 access_token
-     * @return NetOAuthAccessToken
-     */
-    public NetOAuthAccessToken webAccessTokenRefresh(String refreshToken) {
-        String url = "https://api.weixin.qq.com/sns/oauth2/refresh_token?appid=%s&grant_type=refresh_token&refresh_token=%s";
-        url = String.format(url, appID, refreshToken);
-        JSONObject jsonObject = HttpUtils.doGet(url);
-        return jsonObject.toJavaObject(NetOAuthAccessToken.class);
-    }
-
-    /**
-     * 检验授权凭证（access_token）是否有效
-     *
-     * @param accessToken accessToken
-     * @param openid      openid
-     */
-    public BaseWechatDomain checkWebAccessToken(String accessToken, String openid) {
-        String url = "https://api.weixin.qq.com/sns/auth?access_token=%s&openid=%s";
-        url = String.format(url, accessToken, openid);
-        JSONObject jsonObject = HttpUtils.doGet(url);
-        return jsonObject.toJavaObject(BaseWechatDomain.class);
-    }
-
-    /**
-     * 微信签名检查
-     *
-     * @param signature 签名
-     * @param timestamp 时间戳
-     * @param nonce     随机串
-     * @return boolean
-     */
-    public boolean checkSignatures(String signature, String timestamp, String nonce) {
-        this.signature = signature;
-        this.timestamp = timestamp;
-        this.nonce = nonce;
-
-        String[] strArr = new String[]{nonce, token, timestamp};
-        Arrays.sort(strArr);
-        StringBuilder buffer = new StringBuilder();
-        for (String string : strArr) {
-            buffer.append(string);
-        }
-        return SHA1.encode(buffer.toString()).equals(signature);
     }
 
     /**

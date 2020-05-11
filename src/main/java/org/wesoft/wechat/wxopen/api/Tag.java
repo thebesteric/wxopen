@@ -15,6 +15,13 @@ import java.util.List;
  */
 public class Tag extends WechatHelperSupport {
 
+    private String appID, appSecret;
+
+    public Tag(String appID, String appSecret) {
+        this.appID = appID;
+        this.appSecret = appSecret;
+    }
+
     /**
      * 创建标签
      *
@@ -23,7 +30,7 @@ public class Tag extends WechatHelperSupport {
     public JSONObject create(String name) throws NullParameterException, InvalidParameterException {
         if (StringUtils.isNotEmpty(name) && name.length() <= 30) {
             String url = "https://api.weixin.qq.com/cgi-bin/tags/create?access_token=%s";
-            url = String.format(url, getAccessToken());
+            url = String.format(url, getAccessToken(appID, appSecret));
             JSONObject param = new JSONObject();
             param.put("name", name);
             return HttpUtils.doPost(url, packageTagParams(param));
@@ -36,7 +43,7 @@ public class Tag extends WechatHelperSupport {
      */
     public JSONObject list() throws NullParameterException {
         String url = "https://api.weixin.qq.com/cgi-bin/tags/get?access_token=%s";
-        url = String.format(url, getAccessToken());
+        url = String.format(url, getAccessToken(appID, appSecret));
         return HttpUtils.doGet(url);
     }
 
@@ -49,7 +56,7 @@ public class Tag extends WechatHelperSupport {
     public JSONObject update(Integer id, String name) throws NullParameterException, InvalidParameterException {
         if (id != null && StringUtils.isNotEmpty(name) && name.length() <= 30) {
             String url = "https://api.weixin.qq.com/cgi-bin/tags/update?access_token=%s";
-            url = String.format(url, getAccessToken());
+            url = String.format(url, getAccessToken(appID, appSecret));
             JSONObject param = new JSONObject();
             param.put("id", id);
             param.put("name", name);
@@ -66,7 +73,7 @@ public class Tag extends WechatHelperSupport {
     public JSONObject delete(Integer id) throws NullParameterException, InvalidParameterException {
         if (id != 1 && id != 2 && id != 3) {
             String url = "https://api.weixin.qq.com/cgi-bin/tags/delete?access_token=%s";
-            url = String.format(url, getAccessToken());
+            url = String.format(url, getAccessToken(appID, appSecret));
             JSONObject param = new JSONObject();
             param.put("id", id);
             return HttpUtils.doPost(url, packageTagParams(param));
@@ -82,7 +89,7 @@ public class Tag extends WechatHelperSupport {
      */
     public JSONObject getOpenidByTag(Integer id, String nextOpenid) throws NullParameterException {
         String url = "https://api.weixin.qq.com/cgi-bin/user/tag/get?access_token=%s";
-        url = String.format(url, getAccessToken());
+        url = String.format(url, getAccessToken(appID, appSecret));
         JSONObject param = new JSONObject();
         param.put("tagid", id);
         param.put("next_openid", nextOpenid);
@@ -96,7 +103,7 @@ public class Tag extends WechatHelperSupport {
      */
     public JSONObject getTagByOpenid(String openid) throws NullParameterException {
         String url = "https://api.weixin.qq.com/cgi-bin/tags/getidlist?access_token=%s";
-        url = String.format(url, getAccessToken());
+        url = String.format(url, getAccessToken(appID, appSecret));
         JSONObject param = new JSONObject();
         param.put("openid", openid);
         return HttpUtils.doPost(url, param);
@@ -110,7 +117,7 @@ public class Tag extends WechatHelperSupport {
      */
     public JSONObject batchTaggingToUser(Integer id, List<String> openids) throws NullParameterException {
         String url = "https://api.weixin.qq.com/cgi-bin/tags/members/batchtagging?access_token=%s";
-        url = String.format(url, getAccessToken());
+        url = String.format(url, getAccessToken(appID, appSecret));
         JSONObject param = new JSONObject();
         param.put("tagid", id);
         param.put("openid_list", openids);
@@ -125,7 +132,7 @@ public class Tag extends WechatHelperSupport {
      */
     public JSONObject batchUnTaggingToUser(Integer id, List<String> openids) throws NullParameterException {
         String url = "https://api.weixin.qq.com/cgi-bin/tags/members/batchuntagging?access_token=%s";
-        url = String.format(url, getAccessToken());
+        url = String.format(url, getAccessToken(appID, appSecret));
         JSONObject param = new JSONObject();
         param.put("tagid", id);
         param.put("openid_list", openids);

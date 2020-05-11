@@ -11,6 +11,13 @@ import org.wesoft.wechat.wxopen.exception.NullParameterException;
  */
 public class Menu extends WechatHelperSupport {
 
+    private String appID, appSecret;
+
+    public Menu(String appID, String appSecret) {
+        this.appID = appID;
+        this.appSecret = appSecret;
+    }
+
     /**
      * 创建菜单
      *
@@ -18,7 +25,7 @@ public class Menu extends WechatHelperSupport {
      */
     public JSONObject createMenu(Button button) throws NullParameterException {
         String url = "https://api.weixin.qq.com/cgi-bin/menu/create?access_token=%s";
-        url = String.format(url, getAccessToken());
+        url = String.format(url, getAccessToken(appID, appSecret));
         return HttpUtils.doPost(url, JSONObject.toJSONString(button));
     }
 
@@ -27,7 +34,7 @@ public class Menu extends WechatHelperSupport {
      */
     public JSONObject getCurrentMenu() throws NullParameterException {
         String url = "https://api.weixin.qq.com/cgi-bin/get_current_selfmenu_info?access_token=%s";
-        url = String.format(url, getAccessToken());
+        url = String.format(url, getAccessToken(appID, appSecret));
         return HttpUtils.doPost(url);
     }
 
@@ -36,7 +43,7 @@ public class Menu extends WechatHelperSupport {
      */
     public JSONObject deleteMenu() throws NullParameterException {
         String url = "https://api.weixin.qq.com/cgi-bin/menu/delete?access_token=%s";
-        url = String.format(url, getAccessToken());
+        url = String.format(url, getAccessToken(appID, appSecret));
         return HttpUtils.doPost(url);
     }
 

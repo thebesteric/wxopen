@@ -3,13 +3,16 @@ package org.wesoft.wechat.wxopen.constant;
 public class WechatConstant {
 
     /** 三方平台 ACCESS_TOKEN */
-    public static final String COMPONENT_ACCESS_TOKEN = "component_access_token";
+    public static final String COMPONENT_ACCESS_TOKEN_PREFIX = "component_access_token_";
 
     /** 三方平台 PRE_AUTH_CODE */
     public static final String PRE_AUTH_CODE = "pre_auth_code";
 
     /** ACCESS_TOKEN */
-    public static final String ACCESS_TOKEN = "access_token";
+    public static final String ACCESS_TOKEN_PREFIX = "access_token_";
+
+    /** 小程序 ACCESS_TOKEN */
+    public static final String APPLET_ACCESS_TOKEN_PREFIX = "applet_access_token_";
 
     /** JSAPI_TICKET */
     public static final String JSAPI_TICKET = "ticket";

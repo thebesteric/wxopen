@@ -1,19 +1,25 @@
 package org.wesoft.wechat.wxopen.client;
 
+import com.alibaba.fastjson.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wesoft.common.utils.StringUtils;
+import org.wesoft.common.utils.web.HttpUtils;
+import org.wesoft.wechat.wxopen.cache.LocalCache;
 import org.wesoft.wechat.wxopen.client.crypt.AesException;
 import org.wesoft.wechat.wxopen.client.crypt.WXBizMsgCrypt;
+import org.wesoft.wechat.wxopen.constant.WechatConstant;
 
 public class WechatThirdHelper extends WechatThirdHelperSupport {
 
     private static final Logger logger = LoggerFactory.getLogger(WechatThirdHelper.class);
 
+    private String componentAppId, componentAppSecret, componentToken;
+
     public WechatThirdHelper(String componentAppId, String componentAppSecret, String componentToken, String componentEncodeAesKey) {
-        WechatThirdHelperSupport.componentAppId = componentAppId;
-        WechatThirdHelperSupport.componentAppSecret = componentAppSecret;
-        WechatThirdHelperSupport.componentToken = componentToken;
+        this.componentAppId = componentAppId;
+        this.componentAppSecret = componentAppSecret;
+        this.componentToken = componentToken;
         if (StringUtils.isNotEmpty(componentEncodeAesKey)) {
             try {
                 this.crypt = new WXBizMsgCrypt(componentToken, componentEncodeAesKey, componentAppId);
@@ -21,6 +27,47 @@ public class WechatThirdHelper extends WechatThirdHelperSupport {
                 e.printStackTrace();
             }
         }
+    }
+
+    /**
+     * 获取 ComponentAccessToken
+     */
+    public String getComponentAccessToken() {
+        String componentAccessToken = (String) LocalCache.getInstance().get(WechatConstant.COMPONENT_ACCESS_TOKEN_PREFIX + componentAppId);
+        if (StringUtils.isEmpty(componentAccessToken)) {
+            String url = "https://api.weixin.qq.com/cgi-bin/component/api_component_token";
+            JSONObject params = new JSONObject();
+            params.put("component_appid", componentAppId);
+            params.put("component_appsecret", componentAppSecret);
+            params.put("component_verify_ticket", componentVerifyTicket);
+            JSONObject ret = HttpUtils.doPost(url, params);
+            if (ret != null) {
+                logger.info(ret.toString());
+                componentAccessToken = (String) ret.get(WechatConstant.COMPONENT_ACCESS_TOKEN_PREFIX + componentAppId);
+                LocalCache.getInstance().put(WechatConstant.COMPONENT_ACCESS_TOKEN_PREFIX + componentAppId, componentAccessToken, ret.getLong(WechatConstant.EXPIRES_IN));
+            }
+        }
+        return componentAccessToken;
+    }
+
+    /**
+     * 获取 PreAuthCode
+     */
+    public String getPreAuthCode() {
+        String preAuthCode = (String) LocalCache.getInstance().get(WechatConstant.PRE_AUTH_CODE);
+        if (StringUtils.isEmpty(preAuthCode)) {
+            String url = "https://api.weixin.qq.com/cgi-bin/component/api_create_preauthcode?component_access_token=%s";
+            url = String.format(url, getComponentAccessToken());
+            JSONObject params = new JSONObject();
+            params.put("component_appid", componentAppId);
+            JSONObject ret = HttpUtils.doPost(url, params);
+            if (ret != null) {
+                logger.info(ret.toString());
+                preAuthCode = (String) ret.get(WechatConstant.PRE_AUTH_CODE);
+                LocalCache.getInstance().put(WechatConstant.PRE_AUTH_CODE, preAuthCode, ret.getLong(WechatConstant.EXPIRES_IN));
+            }
+        }
+        return preAuthCode;
     }
 
     /**

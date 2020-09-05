@@ -6,7 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 /**
- * TODO
+ * WechatProp
  *
  * @author Eric Joe
  * @version Ver 1.0

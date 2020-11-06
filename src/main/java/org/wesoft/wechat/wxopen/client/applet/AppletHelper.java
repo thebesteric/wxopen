@@ -42,6 +42,11 @@ public class AppletHelper extends AppletHelperSupport {
         initApiComponent();
     }
 
+    /** 获取 access_token */
+    public String getAccessToken() throws NullParameterException {
+        return super.getAccessToken(appID, appSecret);
+    }
+
     /**
      * API 组件初始化
      */
